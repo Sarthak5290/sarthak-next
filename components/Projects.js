@@ -116,7 +116,16 @@ const Projects = () => {
       link: "https://get-me-a-chai-murex.vercel.app/",
       category: "fullstack",
     },
-
+    {
+      title: "Busineess-Dashboard",
+      description:
+        "This project is a business analytics dashboard built for managing and visualizing financial and operational data.",
+      imageSrc: "/projects/image6.png",
+      tech: ["Next.js", "Node.js", "Tailwind CSS", "Typescript"],
+      category: "frontend",
+      github: "https://github.com/Sarthak5290/currency-converter",
+      link: "https://business-dashboard-flax.vercel.app/",
+    },
     {
       title: "ThermaCloud9",
       description:
