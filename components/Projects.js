@@ -127,6 +127,17 @@ const Projects = () => {
       link: "https://business-dashboard-flax.vercel.app/",
     },
     {
+      title: "PDF-to-Text in Marathi and Image Extraction",
+      description:
+        "A Flask-based application designed for processing PDFs. It extracts text and images, matches images with captions, and generates structured XML outputs.",
+      imageSrc: "/projects/image7.png",
+      tech: ["Flask", "Python", "Pillow", "PyMuPDF"],
+      category: "backend",
+      github:
+        "https://github.com/Sarthak5290/PDF-to-text-and-image-extraction--Marathi-Language-",
+      link: "https://e-news-digital.onrender.com/",
+    },
+    {
       title: "ThermaCloud9",
       description:
         "A freelance project for a client in the field of Engineering. A website for their business.",
