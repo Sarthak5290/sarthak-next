@@ -106,6 +106,16 @@ const Projects = () => {
 
   const projects = [
     {
+      title: "True Feedback",
+      description:
+        "An anonymous feedback application built with Next.js. It enables users to receive anonymous feedback and provides AI-generated suggestions for responses.",
+      imageSrc: "/projects/image8.png",
+      tech: ["Next.js", "Google Gemini API", "Resend API"],
+      category: "fullstack",
+      github: "https://github.com/Sarthak5290/1true-feedbacks",
+      link: "https://true-feedback-eosin.vercel.app/",
+    },
+    {
       title: "Get-me-a-chai",
       description:
         "Crowdfunding platform for developers built with Next.js, React, MongoDB, and Node.js.",
