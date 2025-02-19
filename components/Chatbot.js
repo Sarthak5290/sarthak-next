@@ -119,18 +119,9 @@ export default function Chatbot() {
             </div>
             <button
               onClick={toggleChat}
-              className={`fixed bottom-6 right-6 z-50 w-12 h-12 md:w-14 md:h-14 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center
-    ${
-      chatOpen
-        ? "hidden sm:flex bg-red-500 hover:bg-red-600"
-        : "bg-gradient-to-br from-blue-500 to-purple-500 hover:scale-110"
-    }`}
+              className="text-gray-400 hover:text-white"
             >
-              {chatOpen ? (
-                <X className="w-6 h-6 md:w-7 md:h-7 text-white" />
-              ) : (
-                <MessageCircle className="w-6 h-6 md:w-7 md:h-7 text-white" />
-              )}
+              <X className="w-5 h-5 md:w-6 md:h-6" />
             </button>
           </div>
 
