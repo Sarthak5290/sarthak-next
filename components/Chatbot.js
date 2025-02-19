@@ -92,7 +92,7 @@ export default function Chatbot() {
       {/* Floating Chat Button */}
       <button
         onClick={toggleChat}
-        className={`fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center
+        className={`fixed bottom-6 right-6 z-50 w-12 h-12 md:w-14 md:h-14 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center
           ${
             chatOpen
               ? "bg-red-500 hover:bg-red-600"
@@ -100,45 +100,56 @@ export default function Chatbot() {
           }`}
       >
         {chatOpen ? (
-          <X className="w-7 h-7 text-white" />
+          <X className="w-6 h-6 md:w-7 md:h-7 text-white" />
         ) : (
-          <MessageCircle className="w-7 h-7 text-white" />
+          <MessageCircle className="w-6 h-6 md:w-7 md:h-7 text-white" />
         )}
       </button>
 
       {/* Chatbox UI */}
       {chatOpen && (
-        <div className="fixed bottom-24 right-6 bg-gray-900 rounded-2xl shadow-xl w-[400px] h-[550px] z-40 flex flex-col border border-gray-800 overflow-hidden animate-fade-in">
+        <div className="fixed bottom-0 right-0 sm:bottom-24 sm:right-6 bg-gray-900 rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:w-[350px] md:w-[400px] h-[60vh] sm:h-[550px] z-40 flex flex-col border border-gray-800 overflow-hidden animate-fade-in">
           {/* Chat Header */}
-          <div className="p-4 border-b border-gray-700 flex items-center justify-between bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-t-2xl">
+          <div className="p-3 md:p-4 border-b border-gray-700 flex items-center justify-between bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-t-2xl">
             <div className="flex items-center gap-2">
-              <Bot className="w-6 h-6 text-blue-400" />
-              <h2 className="font-semibold text-lg">Chat Assistant</h2>
+              <Bot className="w-5 h-5 md:w-6 md:h-6 text-blue-400" />
+              <h2 className="font-semibold text-base md:text-lg">
+                Chat Assistant
+              </h2>
             </div>
             <button
               onClick={toggleChat}
-              className="text-gray-400 hover:text-white"
+              className={`fixed bottom-6 right-6 z-50 w-12 h-12 md:w-14 md:h-14 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center
+    ${
+      chatOpen
+        ? "hidden sm:flex bg-red-500 hover:bg-red-600"
+        : "bg-gradient-to-br from-blue-500 to-purple-500 hover:scale-110"
+    }`}
             >
-              <X className="w-6 h-6" />
+              {chatOpen ? (
+                <X className="w-6 h-6 md:w-7 md:h-7 text-white" />
+              ) : (
+                <MessageCircle className="w-6 h-6 md:w-7 md:h-7 text-white" />
+              )}
             </button>
           </div>
 
           {/* Chat Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
+          <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`flex items-start gap-3 ${
+                className={`flex items-start gap-2 md:gap-3 ${
                   msg.type === "user" ? "justify-end" : ""
                 }`}
               >
                 {msg.type === "bot" && (
-                  <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center">
-                    <Bot className="w-5 h-5 text-blue-400" />
+                  <div className="w-7 h-7 md:w-8 md:h-8 bg-gray-800 rounded-full flex items-center justify-center">
+                    <Bot className="w-4 h-4 md:w-5 md:h-5 text-blue-400" />
                   </div>
                 )}
                 <div
-                  className={`p-4 max-w-[80%] rounded-xl shadow-md text-sm ${
+                  className={`p-3 md:p-4 max-w-[80%] rounded-xl shadow-md text-xs md:text-sm ${
                     msg.type === "user"
                       ? "bg-gradient-to-br from-blue-500 to-purple-500 text-white rounded-br-none"
                       : "bg-gray-800 text-gray-300 rounded-bl-none"
@@ -150,10 +161,7 @@ export default function Chatbot() {
             ))}
             {isLoading && (
               <div className="flex justify-center items-center">
-                <Loader2
-                  className="w-5 h-5 text-gray-400"
-                  style={{ animation: "spin 1s linear infinite" }}
-                />
+                <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -162,22 +170,22 @@ export default function Chatbot() {
           {/* Chat Input */}
           <form
             onSubmit={handleSubmit}
-            className="p-4 border-t border-gray-700 bg-gray-800"
+            className="p-3 md:p-4 border-t border-gray-700 bg-gray-800"
           >
             <div className="flex gap-2">
               <input
                 ref={inputRef}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="flex-1 rounded-full px-4 py-2 bg-gray-700 text-gray-200 outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 rounded-full px-3 md:px-4 py-2 bg-gray-700 text-gray-200 text-sm outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Type your message..."
                 disabled={isLoading}
               />
               <button
                 type="submit"
-                className="p-3 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full text-white shadow-md hover:scale-105 transition-transform"
+                className="p-2 md:p-3 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full text-white shadow-md hover:scale-105 transition-transform"
               >
-                <Send className="w-5 h-5" />
+                <Send className="w-4 h-4 md:w-5 md:h-5" />
               </button>
             </div>
           </form>
