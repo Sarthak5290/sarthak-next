@@ -1,10 +1,11 @@
 import React from "react";
 import Image from "next/image";
 import heroImg from "../public/avatar2.jpeg";
-import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa"; // Add this import
+import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
+import { ReactTyped } from "react-typed"; // Updated import
 
 const Hero = () => {
-  // Add social media links
+  // Social media links
   const socialLinks = [
     {
       icon: <FaGithub size={24} />,
@@ -25,13 +26,10 @@ const Hero = () => {
 
   return (
     <section className="mt-32 pt-12 md:pt-16">
-    
-
       {/* desktop / large screen view */}
       <div className="hidden md:block">
         <div className="container mx-auto px-4">
           <div className="flex items-center">
-            {/* Reduced the gap here */}
             <div className="flex-1 ml-36">
               <div className="max-w-xl">
                 <h2 className="text-5xl font-bold">
@@ -42,32 +40,67 @@ const Hero = () => {
                     Sarthak Gaikwad
                   </span>
                 </h2>
+                {/* Typing Animation for job titles */}
                 <h5 className="mt-4 text-xl text-gray-600 dark:text-white">
-                  Fullstack Web Developer
+                  <ReactTyped
+                    strings={[
+                      "Frontend Web Developer",
+                      "Backend Web Developer",
+                    ]}
+                    typeSpeed={40}
+                    backSpeed={50}
+                    loop
+                  />
                 </h5>
                 <p className="mt-4 text-gray-600 dark:text-gray-400 leading-relaxed">
-                Hi there! My name is Sarthak Gaikwad. I have hands-on experience in web development and a passion for coding and problem-solving.  I aim to inspire and help others grow in the world of tech!
-
-
-
-
-
-
-
+                  Hi there! My name is Sarthak Gaikwad. I have hands-on
+                  experience in web development and a passion for coding and
+                  problem-solving. I aim to inspire and help others grow in the
+                  world of tech!
                 </p>
               </div>
             </div>
             <div className="flex-1 flex flex-col items-center">
               <div className="relative w-[400px] h-[400px]">
+                {/* Animated Border - Improved with a reduced width */}
+                <div className="absolute -inset-1 overflow-hidden rounded-[3rem_0.5rem_0.5rem_0.5rem]">
+                  <div className="absolute inset-0 animate-border-movement bg-gradient-to-r from-transparent via-[#7ed4e6] to-transparent">
+                    <style jsx>{`
+                      @keyframes border-movement {
+                        0% {
+                          background-position: 0% 50%;
+                          filter: blur(5px) brightness(1);
+                        }
+                        50% {
+                          background-position: 100% 50%;
+                          filter: blur(10px) brightness(1.2);
+                        }
+                        100% {
+                          background-position: 0% 50%;
+                          filter: blur(5px) brightness(1);
+                        }
+                      }
+
+                      .animate-border-movement {
+                        background-size: 200% 200%;
+                        animation: border-movement 5s ease infinite;
+                        box-shadow: 0 0 15px rgba(126, 212, 230, 0.5),
+                          inset 0 0 15px rgba(126, 212, 230, 0.3);
+                      }
+                    `}</style>
+                  </div>
+                </div>
+
+                {/* Image */}
                 <Image
                   alt="Sarthak Gaikwad"
                   src={heroImg}
                   fill
-                  className="object-cover rounded-[3rem_0.5rem_0.5rem_0.5rem] shadow-2xl"
+                  className="relative object-cover rounded-[3rem_0.5rem_0.5rem_0.5rem] shadow-2xl"
                   priority
                 />
               </div>
-              {/* Add social icons for desktop */}
+
               <div className="flex gap-4 mt-6">
                 {socialLinks.map((social, index) => (
                   <a
@@ -99,7 +132,6 @@ const Hero = () => {
                 priority
               />
             </div>
-            {/* Add social icons for mobile */}
             <div className="flex gap-4 mt-6 mb-8">
               {socialLinks.map((social, index) => (
                 <a
@@ -123,8 +155,14 @@ const Hero = () => {
                   Sarthak Gaikwad
                 </span>
               </h2>
+              {/* Typing Animation for job titles */}
               <h5 className="mt-3 text-lg text-gray-600 dark:text-gray-300">
-                Fullstack Web Developer
+                <ReactTyped
+                  strings={["Frontend Web Developer", "Backend Web Developer"]}
+                  typeSpeed={40}
+                  backSpeed={50}
+                  loop
+                />
               </h5>
               <p className="mt-4 text-gray-600 dark:text-gray-400 leading-relaxed">
                 Hi there! My name is Sarthak Gaikwad and I&rsquo;m a software

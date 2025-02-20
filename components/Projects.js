@@ -38,24 +38,45 @@ const ProjectCard = ({ project, index }) => {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="relative overflow-hidden rounded-xl bg-gray-900 p-4">
-        <div className="relative aspect-video overflow-hidden rounded-lg">
+      {/* Animated border effect */}
+      <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-xl opacity-0 group-hover:opacity-100 blur-sm group-hover:blur transition-all duration-500"></div>
+
+      {/* Card container with glass effect */}
+      <div className="relative rounded-xl bg-gray-900/90 backdrop-blur-sm p-5 border border-gray-800 shadow-xl transition-all duration-300 hover:shadow-cyan-500/20 z-10">
+        {/* Image container with improved hover effects */}
+        <div className="relative aspect-video overflow-hidden rounded-lg shadow-md">
           <Image
             src={project.imageSrc}
             alt={project.title}
             fill
-            className="object-cover transition-transform duration-300 group-hover:scale-110"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+          {/* Category badge */}
+          <div className="absolute top-3 right-3 z-10">
+            <span
+              className="px-3 py-1 text-xs font-medium rounded-full 
+              bg-blue-500/20 text-blue-300 border border-blue-500/30
+              backdrop-blur-sm"
+            >
+              {project.category}
+            </span>
+          </div>
         </div>
 
-        <div className="mt-4 space-y-4">
-          <h3 className="text-xl font-bold text-white">{project.title}</h3>
-          <p className="text-gray-400 text-sm line-clamp-2">
+        <div className="mt-5 space-y-4">
+          {/* Title with gradient effect on hover */}
+          <h3 className="text-xl font-bold text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-cyan-400 group-hover:to-blue-500 transition-colors duration-300">
+            {project.title}
+          </h3>
+
+          {/* Description with better typography */}
+          <p className="text-gray-400 text-sm leading-relaxed line-clamp-2 transition-colors duration-300 group-hover:text-gray-300">
             {project.description}
           </p>
 
-          {/* Tech Stack - Moved below description with enhanced design */}
+          {/* Tech Stack with improved pill design */}
           <div className="flex flex-wrap gap-2">
             {project.tech?.map((tech, i) => (
               <span
@@ -64,6 +85,7 @@ const ProjectCard = ({ project, index }) => {
                 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 
                 text-cyan-400 border border-cyan-500/20
                 hover:from-cyan-500/20 hover:to-blue-500/20 
+                hover:text-cyan-300 hover:scale-105
                 transition-all duration-300"
               >
                 {tech}
@@ -71,15 +93,19 @@ const ProjectCard = ({ project, index }) => {
             ))}
           </div>
 
-          <div className="flex gap-4 pt-2">
+          {/* Links with enhanced hover effects */}
+          <div className="flex gap-4 pt-3">
             {project.link && (
               <a
                 href={project.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+                className="inline-flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 transition-all duration-300 hover:translate-x-1"
               >
-                <ExternalLink size={16} />
+                <ExternalLink
+                  size={16}
+                  className="transition-transform duration-300 group-hover:rotate-12"
+                />
                 Live Demo
               </a>
             )}
@@ -88,9 +114,12 @@ const ProjectCard = ({ project, index }) => {
                 href={project.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 transition-colors"
+                className="inline-flex items-center gap-2 text-sm text-cyan-400 hover:text-cyan-300 transition-all duration-300 hover:translate-x-1"
               >
-                <Github size={16} />
+                <Github
+                  size={16}
+                  className="transition-transform duration-300 group-hover:rotate-12"
+                />
                 Source Code
               </a>
             )}
@@ -195,30 +224,40 @@ const Projects = () => {
       ? projects
       : projects.filter((p) => p.category === activeFilter);
 
+  // Filter buttons
+  const filters = [
+    { label: "All Projects", value: "all" },
+    { label: "Frontend", value: "frontend" },
+    { label: "Backend", value: "backend" },
+    { label: "Full Stack", value: "fullstack" },
+  ];
+
   return (
     <section className="mt-40 mb-12 relative group/section">
       <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold text-center mb-12 text-white transition-all duration-300 group-hover/section:text-blue-300">
+        {/* Animated title */}
+        <h1 className="text-4xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300">
           Projects
         </h1>
 
-        {/* <div className="flex justify-center gap-4 mb-12">
-          {["all", "frontend", "fullstack"].map((filter) => (
+        {/* Project filters */}
+        <div className="flex flex-wrap justify-center gap-3 mb-12">
+          {filters.map((filter) => (
             <button
-              key={filter}
-              onClick={() => setActiveFilter(filter)}
-              className={`px-4 py-2 rounded-full text-sm transition-colors ${
-                activeFilter === filter
-                  ? "bg-cyan-500 text-white"
-                  : "bg-gray-800 text-gray-400 hover:bg-gray-700"
+              key={filter.value}
+              onClick={() => setActiveFilter(filter.value)}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
+                activeFilter === filter.value
+                  ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/20"
+                  : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-300"
               }`}
             >
-              {filter.charAt(0).toUpperCase() + filter.slice(1)}
+              {filter.label}
             </button>
           ))}
-        </div>  */}
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filteredProjects.map((project, index) => (
             <ProjectCard key={index} project={project} index={index} />
           ))}
