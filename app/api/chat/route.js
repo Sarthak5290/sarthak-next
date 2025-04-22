@@ -1,8 +1,34 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Initialize Gemini API
-const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
+// Error constants
+const ERROR_MESSAGES = {
+  MISSING_API_KEY: "Google API key is not configured",
+  MISSING_MESSAGE: "Message is required",
+  INVALID_JSON: "Invalid JSON format in request",
+  INITIALIZATION_ERROR: "Failed to initialize AI model",
+  CHAT_ERROR: "Failed to process chat request",
+  NETWORK_ERROR: "Network error occurred",
+  RATE_LIMIT: "API rate limit exceeded",
+  SERVER_ERROR: "Internal server error",
+  INVALID_RESPONSE: "Invalid response from AI model",
+};
+
+// Initialize Gemini API with error handling
+function initializeGenAI() {
+  const apiKey = process.env.GOOGLE_API_KEY;
+
+  if (!apiKey) {
+    throw new Error(ERROR_MESSAGES.MISSING_API_KEY);
+  }
+
+  try {
+    return new GoogleGenerativeAI(apiKey);
+  } catch (error) {
+    console.error("Initialization error:", error);
+    throw new Error(ERROR_MESSAGES.INITIALIZATION_ERROR);
+  }
+}
 
 // Define personal data
 const personalData = {
@@ -154,7 +180,7 @@ const personalData = {
   ],
 };
 
-// Enhanced context prompt with better structure and examples
+// Context prompt
 const contextPrompt = `
 You are an AI assistant representing ${personalData.basic.name}, a ${
   personalData.basic.occupation
@@ -203,46 +229,91 @@ Remember: You represent ${
 
 export async function POST(req) {
   try {
-    const { message } = await req.json();
-    if (!message) {
+    // Parse request body with error handling
+    let body;
+    try {
+      body = await req.json();
+    } catch (error) {
+      console.error("JSON parsing error:", error);
       return NextResponse.json(
-        { error: "Message is required" },
+        { error: ERROR_MESSAGES.INVALID_JSON },
         { status: 400 }
       );
     }
 
-    // (Optional) List all models for debugging:
-    // const models = await genAI.listModels();
-    // console.log("Supported models:", models);
+    // Validate message
+    const { message } = body;
+    if (!message || typeof message !== "string" || message.trim() === "") {
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.MISSING_MESSAGE },
+        { status: 400 }
+      );
+    }
 
-    // Use a valid model ID:
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flash-001",
-    });
+    // Initialize Gemini API
+    let genAI;
+    try {
+      genAI = initializeGenAI();
+    } catch (error) {
+      console.error("Failed to initialize GenAI:", error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
 
-    // Start the chat
-    const chat = model.startChat({
-      history: [
-        {
-          role: "user",
-          parts: [{ text: "Initialize with Sarthak Gaikwad's profile" }],
+    // Get model with error handling
+    let model;
+    try {
+      model = genAI.getGenerativeModel({
+        model: "gemini-2.0-flash-001",
+      });
+    } catch (error) {
+      console.error("Model initialization error:", error);
+
+      // Check for specific error types
+      if (error.message?.includes("rate limit")) {
+        return NextResponse.json(
+          { error: ERROR_MESSAGES.RATE_LIMIT },
+          { status: 429 }
+        );
+      }
+
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.INITIALIZATION_ERROR },
+        { status: 500 }
+      );
+    }
+
+    // Start chat with error handling
+    let chat;
+    try {
+      chat = model.startChat({
+        history: [
+          {
+            role: "user",
+            parts: [{ text: "Initialize with Sarthak Gaikwad's profile" }],
+          },
+          {
+            role: "model",
+            parts: [
+              {
+                text: "I'm initialized as Sarthak Gaikwad's professional AI representative. How can I help you learn about his skills, experience, education, or projects?",
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          temperature: 0.2,
+          topP: 0.95,
+          topK: 40,
+          maxOutputTokens: 1024,
         },
-        {
-          role: "model",
-          parts: [
-            {
-              text: "I'm initialized as Sarthak Gaikwad's professional AI representative. How can I help you learn about his skills, experience, education, or projects?",
-            },
-          ],
-        },
-      ],
-      generationConfig: {
-        temperature: 0.2,
-        topP: 0.95,
-        topK: 40,
-        maxOutputTokens: 1024,
-      },
-    });
+      });
+    } catch (error) {
+      console.error("Chat initialization error:", error);
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.CHAT_ERROR },
+        { status: 500 }
+      );
+    }
 
     // Format and send the user question
     const formatted = `
@@ -252,15 +323,94 @@ User Question: ${message}
 
 Please provide a helpful, accurate response based ONLY on the information in my profile.
 `;
-    const result = await chat.sendMessage(formatted);
-    const response = await result.response;
 
-    return NextResponse.json({ reply: response.text() });
+    // Send message with timeout
+    let result;
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+
+      result = await chat.sendMessage(formatted);
+      clearTimeout(timeoutId);
+    } catch (error) {
+      console.error("Message sending error:", error);
+
+      if (error.name === "AbortError") {
+        return NextResponse.json(
+          { error: "Request timed out" },
+          { status: 504 }
+        );
+      }
+
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.CHAT_ERROR },
+        { status: 500 }
+      );
+    }
+
+    // Get response with error handling
+    let response;
+    try {
+      response = await result.response;
+      if (!response || !response.text) {
+        throw new Error("Invalid response structure");
+      }
+    } catch (error) {
+      console.error("Response processing error:", error);
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.INVALID_RESPONSE },
+        { status: 500 }
+      );
+    }
+
+    // Extract and validate text
+    let responseText;
+    try {
+      responseText = response.text();
+      if (!responseText || typeof responseText !== "string") {
+        throw new Error("Invalid response text");
+      }
+    } catch (error) {
+      console.error("Text extraction error:", error);
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.INVALID_RESPONSE },
+        { status: 500 }
+      );
+    }
+
+    // Return successful response
+    return NextResponse.json({ reply: responseText });
   } catch (error) {
-    console.error("Error generating response:", error);
+    // Global error handler
+    console.error("Unexpected error:", error);
+
+    // Check for specific error types
+    if (error.message?.includes("network")) {
+      return NextResponse.json(
+        { error: ERROR_MESSAGES.NETWORK_ERROR },
+        { status: 503 }
+      );
+    }
+
     return NextResponse.json(
-      { error: "Failed to process request", details: error.message },
+      {
+        error: ERROR_MESSAGES.SERVER_ERROR,
+        details:
+          process.env.NODE_ENV === "development" ? error.message : undefined,
+      },
       { status: 500 }
     );
   }
+}
+
+// Add a GET handler for proper endpoint behavior
+export async function GET() {
+  return NextResponse.json(
+    {
+      message:
+        "This is a POST endpoint. Send a message in the request body to chat.",
+      version: "1.0.0",
+    },
+    { status: 200 }
+  );
 }

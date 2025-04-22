@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
-import { MessageCircle, Send, X, Bot, Loader2 } from "lucide-react";
+import { MessageCircle, Send, X, Bot, Loader2, Sparkles } from "lucide-react";
+import Image from "next/image";
+import chatbot from "../public/chatbot.gif";
 
 export default function Chatbot() {
   const [chatOpen, setChatOpen] = useState(false);
@@ -8,7 +10,8 @@ export default function Chatbot() {
   const [messages, setMessages] = useState([
     {
       type: "bot",
-      content: "👋 Hi! I'm your AI assistant. How can I help?",
+      content:
+        "👋 Hi! I'm your AI assistant. Ask me anything about Sarthak's skills, experience, or projects!",
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -67,116 +70,246 @@ export default function Chatbot() {
     }
   };
 
-  const renderContent = (content) => {
-    // Match links and render them as clickable <a> tags
-    const regex = /(https?:\/\/[^\s]+)/g;
-    return content.split(regex).map((part, index) =>
-      part.match(regex) ? (
-        <a
-          key={index}
-          href={part}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-400 hover:underline"
-        >
-          {part}
-        </a>
-      ) : (
-        part
-      )
+  const renderMarkdownContent = (content) => {
+    // Handle links
+    const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+    let processedContent = content.replace(
+      linkRegex,
+      '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline underline-offset-2 transition-colors">$1</a>'
     );
+
+    // Handle standalone URLs
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    processedContent = processedContent.replace(urlRegex, (url) => {
+      // Don't replace URLs that are already part of markdown links
+      if (!content.includes(`(${url})`)) {
+        return `<a href="${url}" target="_blank" rel="noopener noreferrer" class="text-blue-400 hover:text-blue-300 underline underline-offset-2 transition-colors">${url}</a>`;
+      }
+      return url;
+    });
+
+    // Handle bold text
+    processedContent = processedContent.replace(
+      /\*\*([^*]+)\*\*/g,
+      '<strong class="font-bold">$1</strong>'
+    );
+
+    // Handle italic text
+    processedContent = processedContent.replace(
+      /\*([^*]+)\*/g,
+      '<em class="italic">$1</em>'
+    );
+
+    // Handle inline code
+    processedContent = processedContent.replace(
+      /`([^`]+)`/g,
+      '<code class="bg-gray-700/50 px-1.5 py-0.5 rounded text-sm font-mono">$1</code>'
+    );
+
+    // Handle code blocks
+    processedContent = processedContent.replace(
+      /```([\s\S]*?)```/g,
+      '<pre class="bg-gray-700/50 p-3 rounded-lg my-2 overflow-x-auto"><code class="text-sm font-mono">$1</code></pre>'
+    );
+
+    // Handle line breaks
+    processedContent = processedContent.replace(/\n/g, "<br/>");
+
+    // Handle lists
+    processedContent = processedContent.replace(
+      /^\s*-\s+(.+)$/gm,
+      '<li class="ml-4">$1</li>'
+    );
+    processedContent = processedContent.replace(
+      /(<li.*<\/li>(\s*<br\/>)*)+/g,
+      '<ul class="list-disc pl-5 my-2">$&</ul>'
+    );
+
+    // Handle numbered lists
+    processedContent = processedContent.replace(
+      /^\s*\d+\.\s+(.+)$/gm,
+      '<li class="ml-4">$1</li>'
+    );
+    processedContent = processedContent.replace(
+      /(<li.*<\/li>(\s*<br\/>)*)+/g,
+      (match) => {
+        if (match.includes('class="ml-4"')) {
+          return `<ol class="list-decimal pl-5 my-2">${match}</ol>`;
+        }
+        return match;
+      }
+    );
+
+    // Handle quotes
+    processedContent = processedContent.replace(
+      /^>\s+(.+)$/gm,
+      '<blockquote class="border-l-4 border-gray-600 pl-4 my-2 italic">$1</blockquote>'
+    );
+
+    return <div dangerouslySetInnerHTML={{ __html: processedContent }} />;
   };
 
   return (
     <>
-      {/* Floating Chat Button */}
+      {/* Floating Chat Button with GIF */}
       <button
         onClick={toggleChat}
-        className={`fixed bottom-6 right-6 z-50 w-12 h-12 md:w-14 md:h-14 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center
-          ${
-            chatOpen
-              ? "bg-red-500 hover:bg-red-600"
-              : "bg-gradient-to-br from-blue-500 to-purple-500 hover:scale-110"
-          }`}
+        className={`fixed bottom-6 right-6 z-50 w-20 h-20 rounded-full shadow-lg transition-all duration-300 flex items-center justify-center group
+          ${chatOpen ? "animate-pulse-subtle" : "animate-pulse-subtle"}`}
       >
         {chatOpen ? (
-          <X className="w-6 h-6 md:w-7 md:h-7 text-white" />
+          <div className="relative w-full h-full flex items-center justify-center">
+            <Image
+              src={chatbot}
+              alt="Chatbot"
+              className="w-20 h-20 object-contain"
+              width={48}
+              height={48}
+            />
+          </div>
         ) : (
-          <MessageCircle className="w-6 h-6 md:w-7 md:h-7 text-white" />
+          <div className="relative w-full h-full flex items-center justify-center">
+            <Image
+              src={chatbot}
+              alt="Chatbot"
+              className="w-20 h-20 object-contain"
+              width={48}
+              height={48}
+            />
+          </div>
         )}
       </button>
 
-      {/* Chatbox UI */}
+      {/* Enhanced Chatbox UI */}
       {chatOpen && (
-        <div className="fixed bottom-0 right-0 sm:bottom-24 sm:right-6 bg-gray-900 rounded-t-2xl sm:rounded-2xl shadow-xl w-full sm:w-[350px] md:w-[400px] h-[60vh] sm:h-[550px] z-40 flex flex-col border border-gray-800 overflow-hidden animate-fade-in">
-          {/* Chat Header */}
-          <div className="p-3 md:p-4 border-b border-gray-700 flex items-center justify-between bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-t-2xl">
-            <div className="flex items-center gap-2">
-              <Bot className="w-5 h-5 md:w-6 md:h-6 text-blue-400" />
-              <h2 className="font-semibold text-base md:text-lg">
-                Chat Assistant
-              </h2>
+        <div className="fixed bottom-0 right-0 sm:bottom-24 sm:right-6 rounded-t-3xl sm:rounded-2xl shadow-2xl w-full sm:w-[380px] md:w-[420px] h-[85vh] sm:h-[600px] z-40 flex flex-col overflow-hidden animate-slide-up backdrop-blur-lg bg-gradient-to-b from-gray-900/95 to-gray-800/95 border border-gray-700/50">
+          {/* Enhanced Chat Header */}
+          <div className="p-4 border-b border-gray-700/50 bg-gradient-to-r from-blue-600/20 to-purple-600/20 backdrop-blur-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full flex items-center justify-center">
+                  <Image
+                    src={chatbot}
+                    alt="Chatbot"
+                    className="w-10 h-10 object-contain"
+                    width={40}
+                    height={40}
+                  />
+                </div>
+                <div>
+                  <h2 className="font-semibold text-lg text-white">
+                    Chat Assistant
+                  </h2>
+                  <p className="text-xs text-gray-400">Always here to help</p>
+                </div>
+              </div>
+              <button
+                onClick={toggleChat}
+                className="p-2 rounded-full hover:bg-gray-700/50 transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-400 hover:text-white transition-colors" />
+              </button>
             </div>
-            <button
-              onClick={toggleChat}
-              className="text-gray-400 hover:text-white"
-            >
-              <X className="w-5 h-5 md:w-6 md:h-6" />
-            </button>
           </div>
 
-          {/* Chat Messages */}
-          <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
+          {/* Enhanced Chat Messages */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`flex items-start gap-2 md:gap-3 ${
+                className={`flex items-start gap-3 ${
                   msg.type === "user" ? "justify-end" : ""
                 }`}
               >
                 {msg.type === "bot" && (
-                  <div className="w-7 h-7 md:w-8 md:h-8 bg-gray-800 rounded-full flex items-center justify-center">
-                    <Bot className="w-4 h-4 md:w-5 md:h-5 text-blue-400" />
+                  <div className="w-8 h-8 rounded-full flex items-center justify-center">
+                    <Image
+                      src={chatbot}
+                      alt="Chatbot"
+                      className="w-8 h-8 object-contain"
+                      width={32}
+                      height={32}
+                    />
                   </div>
                 )}
                 <div
-                  className={`p-3 md:p-4 max-w-[80%] rounded-xl shadow-md text-xs md:text-sm ${
+                  className={`relative group px-4 py-3 max-w-[80%] rounded-2xl text-sm transition-all duration-200 ${
                     msg.type === "user"
-                      ? "bg-gradient-to-br from-blue-500 to-purple-500 text-white rounded-br-none"
-                      : "bg-gray-800 text-gray-300 rounded-bl-none"
+                      ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-br-sm shadow-lg"
+                      : "bg-gradient-to-br from-gray-800 to-gray-750 text-gray-100 rounded-bl-sm border border-gray-700/50 shadow-md"
                   }`}
                 >
-                  {renderContent(msg.content)}
+                  {msg.type === "bot"
+                    ? renderMarkdownContent(msg.content)
+                    : msg.content}
+                  {/* Typing Indicator for Bot Messages */}
+                  {msg.type === "bot" &&
+                    isLoading &&
+                    index === messages.length - 1 && (
+                      <div className="absolute -bottom-1 left-3 flex space-x-1">
+                        <span
+                          className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "0ms" }}
+                        ></span>
+                        <span
+                          className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "150ms" }}
+                        ></span>
+                        <span
+                          className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                          style={{ animationDelay: "300ms" }}
+                        ></span>
+                      </div>
+                    )}
                 </div>
               </div>
             ))}
             {isLoading && (
-              <div className="flex justify-center items-center">
-                <Loader2 className="w-5 h-5 text-gray-400 animate-spin" />
+              <div className="flex justify-center items-center py-2">
+                <div className="flex items-center gap-2 text-gray-400">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span className="text-sm">AI is thinking...</span>
+                </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Chat Input */}
+          {/* Enhanced Chat Input */}
           <form
             onSubmit={handleSubmit}
-            className="p-3 md:p-4 border-t border-gray-700 bg-gray-800"
+            className="p-4 border-t border-gray-700/50 bg-gray-800/50 backdrop-blur-sm"
           >
-            <div className="flex gap-2">
-              <input
-                ref={inputRef}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                className="flex-1 rounded-full px-3 md:px-4 py-2 bg-gray-700 text-gray-200 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Type your message..."
-                disabled={isLoading}
-              />
+            <div className="flex gap-3 items-center">
+              <div className="relative flex-1">
+                <input
+                  ref={inputRef}
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  className="w-full rounded-full px-5 py-3 bg-gray-700/50 text-gray-100 text-sm outline-none focus:ring-2 focus:ring-blue-500/50 border border-gray-600/30 placeholder-gray-500 transition-all"
+                  placeholder="Ask about skills, projects, or experience..."
+                  disabled={isLoading}
+                />
+                {message && (
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-500">
+                    {message.length}/500
+                  </span>
+                )}
+              </div>
               <button
                 type="submit"
-                className="p-2 md:p-3 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full text-white shadow-md hover:scale-105 transition-transform"
+                disabled={isLoading || !message.trim()}
+                className={`p-3 rounded-full transition-all duration-200 ${
+                  isLoading || !message.trim()
+                    ? "bg-gray-600 cursor-not-allowed"
+                    : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-blue-500/25 active:scale-95"
+                }`}
               >
-                <Send className="w-4 h-4 md:w-5 md:h-5" />
+                <Send
+                  className={`w-5 h-5 text-white ${
+                    isLoading ? "opacity-50" : ""
+                  }`}
+                />
               </button>
             </div>
           </form>
