@@ -149,6 +149,36 @@ export default function Chatbot() {
     return <div dangerouslySetInnerHTML={{ __html: processedContent }} />;
   };
 
+  // Enhanced Loading Indicator Component
+  const LoadingIndicator = () => (
+    <div className="flex items-center justify-center py-4">
+      <div className="flex items-center gap-3">
+        <div className="flex space-x-1">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-400 to-purple-400"
+              style={{
+                animation: "pulse 1.5s ease-in-out infinite",
+                animationDelay: `${i * 0.2}s`,
+              }}
+            />
+          ))}
+        </div>
+        <div className="relative">
+          <div className="h-4 w-32 bg-gradient-to-r from-gray-700 via-gray-600 to-gray-700 rounded-full overflow-hidden">
+            <div
+              className="h-full w-8 bg-gradient-to-r from-transparent via-gray-500 to-transparent"
+              style={{
+                animation: "shimmer 1.5s infinite linear",
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   return (
     <>
       {/* Floating Chat Button with GIF */}
@@ -200,7 +230,9 @@ export default function Chatbot() {
                   <h2 className="font-semibold text-lg text-white">
                     Chat Assistant
                   </h2>
-                  <p className="text-xs text-gray-400">Always here to help</p>
+                  <p className="text-xs text-gray-400">
+                    {isLoading ? "Thinking..." : "Always here to help"}
+                  </p>
                 </div>
               </div>
               <button
@@ -242,36 +274,10 @@ export default function Chatbot() {
                   {msg.type === "bot"
                     ? renderMarkdownContent(msg.content)
                     : msg.content}
-                  {/* Typing Indicator for Bot Messages */}
-                  {msg.type === "bot" &&
-                    isLoading &&
-                    index === messages.length - 1 && (
-                      <div className="absolute -bottom-1 left-3 flex space-x-1">
-                        <span
-                          className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
-                          style={{ animationDelay: "0ms" }}
-                        ></span>
-                        <span
-                          className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
-                          style={{ animationDelay: "150ms" }}
-                        ></span>
-                        <span
-                          className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
-                          style={{ animationDelay: "300ms" }}
-                        ></span>
-                      </div>
-                    )}
                 </div>
               </div>
             ))}
-            {isLoading && (
-              <div className="flex justify-center items-center py-2">
-                <div className="flex items-center gap-2 text-gray-400">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span className="text-sm">AI is thinking...</span>
-                </div>
-              </div>
-            )}
+            {isLoading && <LoadingIndicator />}
             <div ref={messagesEndRef} />
           </div>
 
@@ -287,7 +293,11 @@ export default function Chatbot() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   className="w-full rounded-full px-5 py-3 bg-gray-700/50 text-gray-100 text-sm outline-none focus:ring-2 focus:ring-blue-500/50 border border-gray-600/30 placeholder-gray-500 transition-all"
-                  placeholder="Ask about skills, projects, or experience..."
+                  placeholder={
+                    isLoading
+                      ? "AI is thinking..."
+                      : "Ask about skills, projects, or experience..."
+                  }
                   disabled={isLoading}
                 />
                 {message && (
@@ -305,11 +315,11 @@ export default function Chatbot() {
                     : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-blue-500/25 active:scale-95"
                 }`}
               >
-                <Send
-                  className={`w-5 h-5 text-white ${
-                    isLoading ? "opacity-50" : ""
-                  }`}
-                />
+                {isLoading ? (
+                  <Loader2 className="w-5 h-5 text-white animate-spin" />
+                ) : (
+                  <Send className="w-5 h-5 text-white" />
+                )}
               </button>
             </div>
           </form>
