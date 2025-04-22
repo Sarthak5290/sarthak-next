@@ -204,7 +204,6 @@ Remember: You represent ${
 export async function POST(req) {
   try {
     const { message } = await req.json();
-
     if (!message) {
       return NextResponse.json(
         { error: "Message is required" },
@@ -212,15 +211,21 @@ export async function POST(req) {
       );
     }
 
-    // Create a history-aware chat session
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    // (Optional) List all models for debugging:
+    // const models = await genAI.listModels();
+    // console.log("Supported models:", models);
+
+    // Use a valid model ID:
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.0-flash-001",
+    });
+
+    // Start the chat
     const chat = model.startChat({
       history: [
         {
           role: "user",
-          parts: [
-            { text: "Initialize with Sarthak Gaikwad's professional profile" },
-          ],
+          parts: [{ text: "Initialize with Sarthak Gaikwad's profile" }],
         },
         {
           role: "model",
@@ -232,24 +237,22 @@ export async function POST(req) {
         },
       ],
       generationConfig: {
-        temperature: 0.2, // Lower temperature for more factual responses
+        temperature: 0.2,
         topP: 0.95,
         topK: 40,
         maxOutputTokens: 1024,
       },
     });
 
-    // Format the user's question with context
-    const formattedMessage = `
+    // Format and send the user question
+    const formatted = `
 ${contextPrompt}
 
 User Question: ${message}
 
 Please provide a helpful, accurate response based ONLY on the information in my profile.
 `;
-
-    // Send message to the model
-    const result = await chat.sendMessage(formattedMessage);
+    const result = await chat.sendMessage(formatted);
     const response = await result.response;
 
     return NextResponse.json({ reply: response.text() });

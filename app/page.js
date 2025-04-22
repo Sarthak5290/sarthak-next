@@ -4,7 +4,7 @@ import Hero from "@/components/Hero";
 import Projects from "@/components/Projects";
 import FloatingIcon from "@/components/FloatingIcon";
 import { techIcons } from "@/config/FloatingIcons";
-// import Chatbot from "@/components/Chatbot";
+import Chatbot from "@/components/Chatbot";
 
 export default function Home() {
   return (
@@ -21,7 +21,7 @@ export default function Home() {
         <Projects />
       </div>
       {/* Chatbot Component */}
-      {/* <Chatbot />  */}
+      <Chatbot />
     </div>
   );
 }
