@@ -131,8 +131,6 @@ const ProjectCard = ({ project, index }) => {
 };
 
 const Projects = () => {
-  const [activeFilter, setActiveFilter] = useState("all");
-
   const projects = [
     {
       title: "True Feedback",
@@ -155,16 +153,7 @@ const Projects = () => {
       link: "https://get-me-a-chai-murex.vercel.app/",
       category: "fullstack",
     },
-    {
-      title: "Busineess-Dashboard",
-      description:
-        "This project is a business analytics dashboard built for managing and visualizing financial and operational data.",
-      imageSrc: "/projects/image6.png",
-      tech: ["Next.js", "Node.js", "Tailwind CSS", "Typescript"],
-      category: "frontend",
-      github: "https://github.com/Sarthak5290/currency-converter",
-      link: "https://business-dashboard-flax.vercel.app/",
-    },
+
     {
       title: "PDF-to-Text in Marathi and Image Extraction",
       description:
@@ -219,46 +208,16 @@ const Projects = () => {
     },
   ];
 
-  const filteredProjects =
-    activeFilter === "all"
-      ? projects
-      : projects.filter((p) => p.category === activeFilter);
-
-  // Filter buttons
-  const filters = [
-    { label: "All Projects", value: "all" },
-    { label: "Frontend", value: "frontend" },
-    { label: "Backend", value: "backend" },
-    { label: "Full Stack", value: "fullstack" },
-  ];
-
   return (
     <section className="mt-40 mb-12 relative group/section">
       <div className="container mx-auto px-4">
         {/* Animated title */}
-        <h1 className="text-4xl font-bold text-center mb-6 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300">
+        <h1 className="text-4xl font-bold text-center mb-12 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300">
           Projects
         </h1>
 
-        {/* Project filters */}
-        <div className="flex flex-wrap justify-center gap-3 mb-12">
-          {filters.map((filter) => (
-            <button
-              key={filter.value}
-              onClick={() => setActiveFilter(filter.value)}
-              className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                activeFilter === filter.value
-                  ? "bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-lg shadow-cyan-500/20"
-                  : "bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-gray-300"
-              }`}
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map((project, index) => (
+          {projects.map((project, index) => (
             <ProjectCard key={index} project={project} index={index} />
           ))}
         </div>

@@ -18,9 +18,9 @@ export const metadata = {
   title: "Sarthak Gaikwad - Full Stack Developer",
   description:
     "Sarthak Gaikwad is a full stack developer with a passion for creating web applications that are both functional and aesthetically pleasing.",
-    icons: {
-      icon: "@/public/avatar2.png", // You can use a .ico or .png as well
-    },
+  icons: {
+    icon: "/avatar-circular.png",
+  },
 };
 
 export default function RootLayout({ children }) {
