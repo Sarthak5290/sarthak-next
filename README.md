@@ -1,10 +1,9 @@
 # Portfolio Website - Sarthak Gaikwad
 
-A modern, responsive portfolio website built with Next.js 15 and React 19, featuring an AI-powered chatbot assistant, dynamic animations, and a sleek dark mode interface.
+A modern, responsive portfolio website built with Next.js 15 and React 19, featuring dynamic animations and a sleek dark mode interface.
 
 ## ✨ Features
 
-- **AI-Powered Chatbot**: Interactive AI assistant powered by Google Generative AI to answer questions about skills, experience, and projects
 - **Responsive Design**: Fully responsive layout optimized for all devices (mobile, tablet, desktop)
 - **Modern UI/UX**: Clean and professional interface with smooth animations using Framer Motion
 - **Dark Mode Support**: Eye-friendly dark theme with gradient accents
@@ -25,8 +24,7 @@ A modern, responsive portfolio website built with Next.js 15 and React 19, featu
 - **Animations**: [Framer Motion 11.15.0](https://www.framer.com/motion/)
 - **Icons**: [Lucide React](https://lucide.dev/), [React Icons](https://react-icons.github.io/react-icons/)
 
-### AI & Utilities
-- **AI Integration**: [@google/generative-ai](https://ai.google.dev/)
+### Utilities
 - **Type Animation**: [React Type Animation](https://www.npmjs.com/package/react-type-animation), [React Typed](https://www.npmjs.com/package/react-typed)
 - **Notifications**: [React Toastify](https://fkhadra.github.io/react-toastify/)
 - **Carousel**: [Embla Carousel React](https://www.embla-carousel.com/)
@@ -62,16 +60,7 @@ Before you begin, ensure you have the following installed:
    bun install
    ```
 
-3. **Set up environment variables**
-
-   Create a `.env.local` file in the root directory and add your API keys:
-   ```env
-   GOOGLE_GENERATIVE_AI_API_KEY=your_google_ai_api_key_here
-   ```
-
-   > **Note**: Get your Google Generative AI API key from [Google AI Studio](https://makersuite.google.com/app/apikey)
-
-4. **Run the development server**
+3. **Run the development server**
    ```bash
    npm run dev
    # or
@@ -82,7 +71,7 @@ Before you begin, ensure you have the following installed:
    bun dev
    ```
 
-5. **Open your browser**
+4. **Open your browser**
 
    Navigate to [http://localhost:3000](http://localhost:3000) to see the application
 
@@ -91,14 +80,10 @@ Before you begin, ensure you have the following installed:
 ```
 sarthak-next/
 ├── app/                      # Next.js App Router directory
-│   ├── api/                  # API routes
-│   │   └── chat/            # Chatbot API endpoint
-│   │       └── route.js
 │   ├── globals.css          # Global styles
 │   ├── layout.js            # Root layout component
 │   └── page.js              # Home page
 ├── components/              # React components
-│   ├── Chatbot.js          # AI chatbot component
 │   ├── Contact.js          # Contact section
 │   ├── FloatingIcon.js     # Animated floating icons
 │   ├── Footer.js           # Footer component
@@ -112,7 +97,6 @@ sarthak-next/
 ├── public/                  # Static assets
 │   ├── icons/              # Technology icons
 │   ├── projects/           # Project images
-│   ├── chatbot.gif        # Chatbot animation
 │   └── ...                 # Other images
 ├── .gitignore
 ├── eslint.config.mjs       # ESLint configuration
@@ -141,12 +125,6 @@ Custom theme configuration can be found in `tailwind.config.mjs`. Includes custo
 ### Next.js
 Next.js configuration is available in `next.config.mjs`. Currently using default settings with room for customization.
 
-## 🌐 Environment Variables
-
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `GOOGLE_GENERATIVE_AI_API_KEY` | API key for Google Generative AI chatbot | Yes |
-
 ## 🤝 Contributing
 
 Contributions are welcome! Please follow these steps:
@@ -174,7 +152,6 @@ This project is open source and available under the [MIT License](LICENSE).
 
 - [Next.js](https://nextjs.org/) - The React Framework
 - [Vercel](https://vercel.com/) - Deployment Platform
-- [Google Generative AI](https://ai.google.dev/) - AI Integration
 - [Tailwind CSS](https://tailwindcss.com/) - Styling Framework
 - [Framer Motion](https://www.framer.com/motion/) - Animation Library
 
